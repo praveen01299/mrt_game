@@ -1011,7 +1011,7 @@ async def start_game(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     map_url = 'https://dam.mediacorp.sg/image/upload/s--kikA5vSH--/f_auto,q_auto/v1/mediacorp/cna/image/2023/01/18/MRT%20map.png?itok=BkwVTtKV'  # Your MRT map image link
 
     await context.bot.send_photo(chat_id=update.effective_chat.id, photo=map_url)
-    await update.message.reply_text('Guess the MRT station! Type your guess or /exit to give up.')
+    await update.message.reply_text("One of the 134 MRT Stations is the correct answer! Can you figure out which one it is? Type your guess below, or type /exit to give up.")
 
 async def handle_guess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global game_state
