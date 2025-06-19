@@ -1023,7 +1023,7 @@ async def handle_guess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     user_station = find_station(user_guess, MRT_Stations)
 
     if not user_station:
-        await update.message.reply_text("Station not found in dataset. Try again.")
+        await update.message.reply_text("There's no such station! Try again.")
         return
 
     game_state['attempts'] += 1
