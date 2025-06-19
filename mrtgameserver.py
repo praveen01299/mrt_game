@@ -1048,7 +1048,7 @@ async def exit_game(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("No game is currently active. Use /start_game to begin a new game.")
 
 def main():
-    TOKEN = '6609516834:AAHDe8b9lr4dgfuF_cpMfNbZPd5__DNcs8E'
+    TOKEN = 'INPUT TOKEN HERE'
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
