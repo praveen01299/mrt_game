@@ -1,4 +1,3 @@
-
 MRT_Stations = [
     {
         "Station_Name": "Bukit Batok",
@@ -604,8 +603,8 @@ MRT_Stations = [
     },
     {
         "Station_Name": "Botanic Gardens",
-        "Station_Code": ["CC19"],
-        "Line": ["Circle Line"],
+        "Station_Code": ["CC19", "DT9"],
+        "Line": ["Circle Line", "Downtown Line"],
         "Year_Started_Operation": 2011,
         "Location": "1.3224, 103.81505"
     },
