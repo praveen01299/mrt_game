@@ -9,6 +9,7 @@ with open('mrt_stations.json', 'r') as f:
     MRT_Stations = json.load(f)
 
 game_state = {'is_playing': False, 'correct_answer': None, 'attempts': 0}
+game_states = {}
 
 def find_station(station_name, MRT_Stations):
     for station in MRT_Stations:
@@ -63,28 +64,31 @@ def compare_stations(correct_station, user_station):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text('Welcome to the MRT Station Guessing Game! Type /start_game to begin.')
 
-async def start_game(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    global game_state
-    game_state['is_playing'] = True
-    game_state['correct_answer'] = random.choice(MRT_Stations)
-    game_state['attempts'] = 0
+async def start_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    game_states[user_id] = {
+        'is_playing': True,
+        'correct_answer': random.choice(MRT_Stations),
+        'attempts': 0
+    }
 
-    map_url = 'https://dam.mediacorp.sg/image/upload/s--kikA5vSH--/f_auto,q_auto/v1/mediacorp/cna/image/2023/01/18/MRT%20map.png?itok=BkwVTtKV'  # Your MRT map image link
-
+    map_url = 'https://dam.mediacorp.sg/image/upload/s--kikA5vSH--/f_auto,q_auto/v1/mediacorp/cna/image/2023/01/18/MRT%20map.png?itok=BkwVTtKV'
     await context.bot.send_photo(chat_id=update.effective_chat.id, photo=map_url)
-    await update.message.reply_text("One of the 134 MRT Stations is the correct answer! Can you figure out which one it is? Type your guess below, or type /exit to give up.")
+    await update.message.reply_text("Guess which MRT station it is! Type your guess below or type /exit to give up.")
 
-async def handle_guess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    global game_state
-    if not game_state['is_playing']:
-        await update.message.reply_text("No game is currently active. Use /start_game to begin a new game.")
+async def handle_guess(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    game_state = game_states.get(user_id)
+
+    if not game_state or not game_state['is_playing']:
+        await update.message.reply_text("No game active. Type /start_game to begin.")
         return
 
     user_guess = update.message.text
     user_station = find_station(user_guess, MRT_Stations)
 
     if not user_station:
-        await update.message.reply_text("There's no such station! Try again.")
+        await update.message.reply_text("No such station. Try again.")
         return
 
     game_state['attempts'] += 1
@@ -93,20 +97,22 @@ async def handle_guess(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text(result)
 
     if correct:
-        await update.message.reply_text(f"🎉 Congratulations! You found it in {game_state['attempts']} attempts. Type /start_game to play again.")
+        await update.message.reply_text(f"🎉 You got it in {game_state['attempts']} attempts! Type /start_game to play again.")
         game_state['is_playing'] = False
     else:
         await update.message.reply_text("Try again or type /exit to give up.")
 
-async def exit_game(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    global game_state
-    if game_state['is_playing']:
+async def exit_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    game_state = game_states.get(user_id)
+
+    if game_state and game_state['is_playing']:
         await update.message.reply_text(
             f"You gave up after {game_state['attempts']} attempts. The correct station was {game_state['correct_answer']['Station_Name']}."
         )
         game_state['is_playing'] = False
     else:
-        await update.message.reply_text("No game is currently active. Use /start_game to begin a new game.")
+        await update.message.reply_text("No game active. Type /start_game to begin.")
 
 def main():
     TOKEN = 'INPUT TOKEN HERE'
